@@ -4,7 +4,7 @@
  * 
  * Pin configuration -
  * PB0/OC0A: FAN p-chan FET output (Pin 5)
- * PB2/ADC1: NTC thermistor input (Pin 3)
+ * PB4/ADC2: NTC thermistor input (Pin 3)
  *
  * Based on original work at https://gist.github.com/adnbr/9289235
  * -------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 void adc_setup (void)
 {
     // Set the ADC input to PB4/ADC2
-    ADMUX |= (1 << MUX0);
+    ADMUX |= (1 << MUX1);
     ADMUX |= (1 << ADLAR);
  
     // Set the prescaler to clock/128 & enable ADC
