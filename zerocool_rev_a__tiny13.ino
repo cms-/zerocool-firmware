@@ -69,15 +69,41 @@ void pwm_write ( uint8_t val )
 
 void delay_nop( unsigned long delay ) 
 {
-  volatile unsigned long i = 0;
-  for (i = 0; i < delay; i++) {
-      __asm__ __volatile__ ("nop");
-  }
+    volatile unsigned long i = 0;
+    for (i = 0; i < delay; i++) {
+        __asm__ __volatile__ ("nop");
+    }
+}
+
+uint8_t get_speed( uint8_t reading )
+{
+    static const uint8_t lookup[6][2] =
+    {
+        {0x49, 0xFE},
+        {0x50, 0xD5},
+        {0x53, 0xA5},
+        {0x57, 0x75},
+        {0x59, 0x45},
+        {0x60, 0x00}
+    };
+
+    uint8_t i;
+    uint8_t speed;
+    for (i = 0; i < 7; i++)
+    {
+        if ( reading >= lookup[i][0] )
+        {
+            speed = lookup[i][1];
+        }
+    }
+
+    return speed;
 }
  
 int main (void)
 {
     uint8_t adc_in;
+    uint8_t fan_speed;
  
     // FAN is an output.
     DDRB |= (1 << FAN);  
@@ -87,19 +113,15 @@ int main (void)
   
     while (1) {
 
-        /*
-        Vcc = 4.8V
-        pwm_write((uint8_t)0x45); // 2V
-        pwm_write((uint8_t)0x75); // 2.7V
-        pwm_write((uint8_t)0xA5); // 3.5V
-        pwm_write((uint8_t)0xD5); // 4.1V
-        pwm_write((uint8_t)0xFE); // 4.5V
-        pwm_write((uint8_t)0x00); // 0V
-        */
-
         // Get the ADC value
         adc_in = adc_read();
+        // Look up the fan speed
+        fan_speed = get_speed(adc_in);
         // Now write it to the PWM counter
-        pwm_write(adc_in);
+        pwm_write(fan_speed);
+        // Wait around for a bit
+        delay_nop(1000000);
     }
+
+    return 0;
 }
