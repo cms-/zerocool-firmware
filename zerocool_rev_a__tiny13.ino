@@ -79,19 +79,18 @@ uint8_t get_speed( uint8_t reading )
 {
     static const uint8_t lookup[6][2] =
     {
-        {0x49, 0xFE},
-        {0x50, 0xD5},
-        {0x53, 0xA5},
-        {0x57, 0x75},
         {0x59, 0x45},
-        {0x60, 0x00}
+        {0x57, 0x75},
+        {0x53, 0xA5},
+        {0x50, 0xD5},
+        {0x49, 0xFE}
     };
 
     uint8_t i;
-    uint8_t speed;
-    for (i = 0; i < 7; i++)
+    uint8_t speed = 0;
+    for (i = 0; i < 5; i++)
     {
-        if ( reading >= lookup[i][0] )
+        if ( reading <= lookup[i][0] )
         {
             speed = lookup[i][1];
         }
@@ -120,7 +119,7 @@ int main (void)
         // Now write it to the PWM counter
         pwm_write(fan_speed);
         // Wait around for a bit
-        delay_nop(1000000);
+        //delay_nop(1000000);
     }
 
     return 0;
